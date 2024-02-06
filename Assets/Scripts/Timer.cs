@@ -9,6 +9,8 @@ public class Timer : MonoBehaviour
     [SerializeField] TMP_Text milisecondsText;
     [SerializeField] TMP_Text pauseButtonText;
     [SerializeField] Button startNewGameButton;
+    [SerializeField] TMP_Text before;
+    [SerializeField] TMP_Text after;
 
     private bool gameStarted=false;
     private bool gamePaused=true;
@@ -106,15 +108,17 @@ public class Timer : MonoBehaviour
         milisecondsText.text = miliseconds < 10 ? "0" + Mathf.Floor(miliseconds).ToString() : Mathf.Floor(miliseconds).ToString();
     }
 
-    private void OnApplicationFocus(bool focus)
+    private void OnApplicationPause(bool pause)
     {
-        if (focus)
+        if (pause && gameStarted && !gamePaused)
+        {
             pauseDateTime = System.DateTime.Now;
-        if (!focus)
+        }
+        if (!pause && gameStarted && !gamePaused)
         {
             System.TimeSpan timeSpent = pauseDateTime - System.DateTime.Now;
             double timePassed = timeSpent.TotalSeconds;
-            if (timePassed > 0)
+            if (timePassed < 0)
             {
                 timeLeft += (float)timePassed;
                 UpdateTimer();
