@@ -5,9 +5,15 @@ The app is ad free.
 
 
 Credits:
+
 Fonts (all licenses are attached):
+
 Noto_Sans_Symbols_2 : https://fonts.google.com/noto/specimen/Noto+Sans+Symbols+2
+
 Rajdhani : https://fonts.google.com/specimen/Rajdhani
+
 Roboto : https://fonts.google.com/specimen/Roboto
+
+Graphics: 
 
 Shirts icons : https://www.flaticon.com/free-icon/singlet_4182529
