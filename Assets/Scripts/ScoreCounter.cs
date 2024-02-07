@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
@@ -23,6 +24,7 @@ public class ScoreCounter : MonoBehaviour
     [SerializeField] TMP_Dropdown leftTeamDropdown;
     [SerializeField] TMP_Dropdown rightTeamDropdown;
     [SerializeField] GameObject menuOverlay;
+    private bool quitBool = false;
 
     public List<TeamPreset> teams = new List<TeamPreset>();
     public class TeamPreset
@@ -143,16 +145,60 @@ public class ScoreCounter : MonoBehaviour
     public void OpenMenu()
     {
         menuOverlay.SetActive(true);
+        Menu.menuOpened = true;
     }
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            if (Menu.menuOpened == true)
+                Menu.CloseMenu();
+            else if (History.historyOpened == true)
+                History.CloseHistory();
+            else if (QuitOverlay.quitOverlayOpened == true)
+                QuitOverlay.CloseQuitOverlay();
+            else if (!quitBool)
+            {
+                quitBool = true;
 #if UNITY_EDITOR
-            EditorApplication.ExitPlaymode();
+                Debug.Log("Тапніть ще раз щоб закрити застосунок");
 #else
-        Application.Quit();
+                _ShowAndroidToastMessage("Тапніть ще раз щоб закрити застосунок");
 #endif
+                StartCoroutine(CloseButtonDelay());
+            }
+            else
+            {
+                quitBool = false;
+                Menu.CloseGame();
+            }
+                
         }
+        else if (Input.touchCount >= 1 && quitBool)
+            quitBool = false;
+    }
+
+    /// <param name="message">Message string to show in the toast.</param>
+    private void _ShowAndroidToastMessage(string message)
+    {
+        AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+        AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+
+        if (unityActivity != null)
+        {
+            AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
+            unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+            {
+                AndroidJavaObject toastObject = toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity, message, 0);
+                toastObject.Call("show");
+            }));
+        }
+    }
+
+    private IEnumerator CloseButtonDelay()
+    {
+        yield return new WaitForSeconds(2.5f);
+        if (quitBool)
+            quitBool=false;
     }
 }

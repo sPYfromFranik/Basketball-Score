@@ -9,6 +9,7 @@ public class History : MonoBehaviour
     private List<Record> recordsList = new List<Record>();
     [SerializeField] GameObject recordsHolder;
     [SerializeField] Button clearListButton;
+    public static bool historyOpened;
     private void OnEnable()
     {
         FormList();
@@ -102,9 +103,10 @@ public class History : MonoBehaviour
         }
     }
 
-    public void CloseHistory()
+    public static void CloseHistory()
     {
-        ClearList();
-        this.gameObject.SetActive(false);
+        historyOpened = false;
+        FindObjectOfType<History>().ClearList();
+        FindObjectOfType<History>().gameObject.SetActive(false);
     }
 }

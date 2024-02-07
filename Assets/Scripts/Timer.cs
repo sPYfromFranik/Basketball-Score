@@ -9,8 +9,6 @@ public class Timer : MonoBehaviour
     [SerializeField] TMP_Text milisecondsText;
     [SerializeField] TMP_Text pauseButtonText;
     [SerializeField] Button startNewGameButton;
-    [SerializeField] TMP_Text before;
-    [SerializeField] TMP_Text after;
 
     private bool gameStarted=false;
     private bool gamePaused=true;
