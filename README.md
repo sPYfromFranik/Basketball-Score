@@ -4,12 +4,14 @@ The app is currently Ukrainian only. You are free to make a localization if you 
 The app is ad free.<br>
 <br>
 <b>CREDITS</b>
-<b>Fonts:</b><br>
+
+<br>
+<b>Fonts:</b>
 <li><a href="https://fonts.google.com/noto/specimen/Noto+Sans+Symbols+2">Noto Sans Symbols 2</a></li>
 <li><a href="https://fonts.google.com/specimen/Rajdhani">Rajdhani</a></li>
 <li><a href="https://fonts.google.com/specimen/Roboto">Roboto</a></li>
 <br>
-<b>Graphics:</b><br>
+<b>Graphics:</b>
 <li><a href="https://www.flaticon.com/free-icon/singlet_4182529">Shirt icon</a></li>
 <li><a href="https://www.flaticon.com/free-icon/delete_3405244">Trash icon</a></li>
 <li><a href="https://www.flaticon.com/free-icon/pencil_6177842">Pencil icon</a></li>
