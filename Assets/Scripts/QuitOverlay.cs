@@ -10,6 +10,7 @@ public class QuitOverlay : MonoBehaviour
     public static void CloseQuitOverlay()
     {
         quitOverlayOpened = false;
+        Vibration.VibratePop();
         FindObjectOfType<QuitOverlay>().gameObject.SetActive(false);
     }
 }

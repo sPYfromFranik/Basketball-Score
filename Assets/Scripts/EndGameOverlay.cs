@@ -10,5 +10,6 @@ public class EndGameOverlay : MonoBehaviour
     {
         endGameOverlayOpened = false;
         FindObjectOfType<EndGameOverlay>().gameObject.SetActive(false);
+        Vibration.VibratePop();
     }
 }

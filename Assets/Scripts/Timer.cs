@@ -26,6 +26,7 @@ public class Timer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Vibration.Init();
         startNewGameButton.interactable = false;
         timer = PlayerPrefs.GetInt("Timer", 600);
         beepSeconds = PlayerPrefs.GetInt("BeepSeconds", 10);
@@ -47,6 +48,8 @@ public class Timer : MonoBehaviour
                 if (timeLeft <= timer / 2 && PlayerPrefs.GetInt("MidGameSound", 1) == 1 && !midGameSoundPlayed)
                 {
                     audioSource.PlayOneShot(midGameClip);
+                    if (PlayerPrefs.GetInt("SoundVibration", 1) == 1)
+                        Vibration.Vibrate();
                     midGameSoundPlayed = true;
                 }
                 PlaySecondsSound();
@@ -66,6 +69,8 @@ public class Timer : MonoBehaviour
     public void PlayEndSound()
     {
         audioSource.PlayOneShot(endGameClip);
+        if (PlayerPrefs.GetInt("SoundVibration", 1) == 1)
+            Vibration.Vibrate();
     }
 
     public void AddTime(int _time)
@@ -81,7 +86,7 @@ public class Timer : MonoBehaviour
             timeLeft += _time;
             prevBeepTime = (int)Mathf.Floor(timeLeft % 60);
         }
-
+        Vibration.VibratePop();
         UpdateTimer();
     }
 
@@ -100,7 +105,7 @@ public class Timer : MonoBehaviour
             timeLeft = timeLeft < 0 ? 0 : timeLeft;
             prevBeepTime = (int)Mathf.Floor(timeLeft % 60);
         }
-
+        Vibration.VibratePop();
         UpdateTimer();
     }
 
@@ -121,6 +126,7 @@ public class Timer : MonoBehaviour
             gamePaused = true;
             pauseButtonText.text = "⏵";
         }
+        Vibration.VibratePop();
     }
 
     private void UpdateTimer()
@@ -141,6 +147,8 @@ public class Timer : MonoBehaviour
             {
                 prevBeepTime = (int)Mathf.Floor(timeLeft % 60);
                 audioSource.PlayOneShot(secondsClip);
+                if (PlayerPrefs.GetInt("SoundVibration", 1) == 1)
+                    Vibration.VibrateNope();
             }
     }
 

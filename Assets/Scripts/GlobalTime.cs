@@ -12,7 +12,7 @@ public class GlobalTime : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        hoursText.text = System.DateTime.Now.Hour.ToString();
-        minutesText.text = System.DateTime.Now.Minute.ToString();
+        hoursText.text = System.DateTime.Now.Hour < 10 ? '0' + System.DateTime.Now.Hour.ToString() : System.DateTime.Now.Hour.ToString();
+        minutesText.text = System.DateTime.Now.Minute < 10 ? '0' + System.DateTime.Now.Minute.ToString() : System.DateTime.Now.Minute.ToString();
     }
 }

@@ -119,6 +119,7 @@ public class ScoreCounter : MonoBehaviour
                 team.score = team.score < 0 ? 0 : team.score;
                 break;
             }
+        Vibration.VibratePop();
         UpdateScoreText();
     }
 
@@ -140,6 +141,7 @@ public class ScoreCounter : MonoBehaviour
                 team.fouls = team.fouls < 0 ? 0 : team.fouls;
                 break;
             }
+        Vibration.VibratePop();
         UpdateFoulsText();
     }
 
@@ -192,11 +194,13 @@ public class ScoreCounter : MonoBehaviour
     {
         menuOverlay.SetActive(true);
         Menu.menuOpened = true;
+        Vibration.VibratePop();
     }
     public void EndGame()
     {
         endGameOverlay.SetActive(true);
         EndGameOverlay.endGameOverlayOpened = true;
+        Vibration.VibratePop();
     }
     void Update()
     {
@@ -210,6 +214,8 @@ public class ScoreCounter : MonoBehaviour
                 QuitOverlay.CloseQuitOverlay();
             else if (EndGameOverlay.endGameOverlayOpened == true)
                 EndGameOverlay.CloseEndGameOverlay();
+            else if (RecordEditOverlay.recordEditOverlayOpened == true)
+                FindObjectOfType<RecordEditOverlay>().CloseRecordEditOverlay();
             else if (!quitBool)
             {
                 quitBool = true;
@@ -225,7 +231,7 @@ public class ScoreCounter : MonoBehaviour
                 quitBool = false;
                 Menu.CloseGame();
             }
-                
+            Vibration.VibratePop();
         }
         else if (Input.touchCount >= 1 && quitBool)
             quitBool = false;
@@ -253,5 +259,10 @@ public class ScoreCounter : MonoBehaviour
         yield return new WaitForSeconds(2.5f);
         if (quitBool)
             quitBool=false;
+    }
+
+    public void VibrationPop()
+    {
+        Vibration.VibratePop();
     }
 }

@@ -9,6 +9,7 @@ public class History : MonoBehaviour
     private List<Record> recordsList = new List<Record>();
     [SerializeField] GameObject recordsHolder;
     [SerializeField] Button clearListButton;
+    [SerializeField] GameObject recordEditOverlay;
     public static bool historyOpened;
     private void OnEnable()
     {
@@ -59,16 +60,22 @@ public class History : MonoBehaviour
             {
                 recordsList.Add(_records[i]);
                 _records[i].Deleted += UpdateList;
+                _records[i].Editing += UpdateRecord;
                 _records[i].gameOrder = ScoreCounter.history[i].gameNumber;
             }
         }
-        recordsHolder.GetComponent<VerticalLayoutGroup>().spacing = 1;
-        recordsHolder.GetComponent<VerticalLayoutGroup>().spacing = 0;
+        var _i = 0;
+        foreach (Record record in recordsList)
+        {
+            record.gameOrder = _i;
+            record.scoreHistoryRecord = ScoreCounter.history[_i];
+            record.SetVisuals();
+            _i++;
+        }
         if (recordsList.Count > 0) 
             clearListButton.interactable = true;
         else
             clearListButton.interactable = false;
-        UpdateVisuals();
     }
 
     public void ClearList()
@@ -84,31 +91,26 @@ public class History : MonoBehaviour
 
     public void ClearHistory()
     {
+        Vibration.VibratePop();
         ClearList();
         ScoreCounter.history.Clear();
         clearListButton.interactable = false;
     }
 
-    private void UpdateVisuals()
-    {
-        var _i = 0;
-        foreach (Record record in recordsList)
-        {
-            record.gameOrder = _i;
-            record.leftFouls.text = ScoreCounter.history[_i].leftTeam.fouls.ToString();
-            record.rightFouls.text = ScoreCounter.history[_i].rightTeam.fouls.ToString();
-            record.leftScore.text = ScoreCounter.history[_i].leftTeam.score.ToString();
-            record.rightScore.text = ScoreCounter.history[_i].rightTeam.score.ToString();
-            record.leftTeamImage.sprite = ScoreCounter.history[_i].leftTeam.team.icon;
-            record.rightTeamImage.sprite = ScoreCounter.history[_i].rightTeam.team.icon;
-            _i++;
-        }
-    }
-
     public static void CloseHistory()
     {
         historyOpened = false;
+        Vibration.VibratePop();
         FindObjectOfType<History>().ClearList();
         FindObjectOfType<History>().gameObject.SetActive(false);
+    }
+
+    private void UpdateRecord(Record _record)
+    {
+        RecordEditOverlay.recordEditOverlayOpened = true;
+        recordEditOverlay.SetActive(true);
+        FindObjectOfType<RecordEditOverlay>().editingRecord = _record;
+        FindObjectOfType<RecordEditOverlay>().UpdateVisuals();
+        CloseHistory();
     }
 }
