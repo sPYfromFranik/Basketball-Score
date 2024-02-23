@@ -1,6 +1,6 @@
-This is a free application that allows you to track score and time of a basketball game.<br>
-It's meant to be simple, because it was created to be used on training games, where fouls are not counted.<br>
-The app is currently on Ukrainian. You are free to make a localization if you wish. Or I can make it for you, for a small donation.<br>
+This is a free application that allows you to track score, time and fouls of a basketball game.<br>
+It's meant to be simple, because it was created to be used on training games.<br>
+The app is currently Ukrainian only. You are free to make a localization if you wish. Or I can make it for you for a small donation.<br>
 The app is ad free.<br>
 <br>
 <b>CREDITS</b>
