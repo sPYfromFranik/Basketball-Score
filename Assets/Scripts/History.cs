@@ -95,6 +95,8 @@ public class History : MonoBehaviour
         foreach (Record record in recordsList)
         {
             record.gameOrder = _i;
+            record.leftFouls.text = ScoreCounter.history[_i].leftTeam.fouls.ToString();
+            record.rightFouls.text = ScoreCounter.history[_i].rightTeam.fouls.ToString();
             record.leftScore.text = ScoreCounter.history[_i].leftTeam.score.ToString();
             record.rightScore.text = ScoreCounter.history[_i].rightTeam.score.ToString();
             record.leftTeamImage.sprite = ScoreCounter.history[_i].leftTeam.team.icon;

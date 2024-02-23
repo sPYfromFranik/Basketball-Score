@@ -1,4 +1,5 @@
 ﻿using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,17 +10,25 @@ public class Timer : MonoBehaviour
     [SerializeField] TMP_Text milisecondsText;
     [SerializeField] TMP_Text pauseButtonText;
     [SerializeField] Button startNewGameButton;
+    [SerializeField] AudioSource audioSource;
+    [SerializeField] AudioClip secondsClip;
+    [SerializeField] AudioClip endGameClip;
+    [SerializeField] AudioClip midGameClip;
 
+    public static int beepSeconds;
+    private int prevBeepTime = 0;
     private bool gameStarted=false;
     private bool gamePaused=true;
     private float timeLeft;
     private float timer;
     private System.DateTime pauseDateTime;
+    private bool midGameSoundPlayed = false;
     // Start is called before the first frame update
     void Start()
     {
         startNewGameButton.interactable = false;
         timer = PlayerPrefs.GetInt("Timer", 600);
+        beepSeconds = PlayerPrefs.GetInt("BeepSeconds", 10);
         timeLeft = timer;
         UpdateTimer();
     }
@@ -31,11 +40,21 @@ public class Timer : MonoBehaviour
         {
             timeLeft -= Time.deltaTime;
             if (timeLeft > 0)
+            {
                 UpdateTimer();
+                if (midGameSoundPlayed && timeLeft > timer / 2)
+                    midGameSoundPlayed = false;
+                if (timeLeft <= timer / 2 && PlayerPrefs.GetInt("MidGameSound", 1) == 1 && !midGameSoundPlayed)
+                {
+                    audioSource.PlayOneShot(midGameClip);
+                    midGameSoundPlayed = true;
+                }
+                PlaySecondsSound();
+            }   
         }
         if (gameStarted && !gamePaused && timeLeft <= 0)
         {
-            //PlayOneShot();
+            PlayEndSound();
             Debug.Log("Time ended");
             timeLeft = 0;
             gamePaused = true;
@@ -43,6 +62,10 @@ public class Timer : MonoBehaviour
             UpdateTimer();
             gamePaused = true;
         }
+    }
+    public void PlayEndSound()
+    {
+        audioSource.PlayOneShot(endGameClip);
     }
 
     public void AddTime(int _time)
@@ -54,7 +77,10 @@ public class Timer : MonoBehaviour
             timeLeft = timer;
         }
         else if (gameStarted)
+        {
             timeLeft += _time;
+            prevBeepTime = (int)Mathf.Floor(timeLeft % 60);
+        }
 
         UpdateTimer();
     }
@@ -72,6 +98,7 @@ public class Timer : MonoBehaviour
         {
             timeLeft -= _time;
             timeLeft = timeLeft < 0 ? 0 : timeLeft;
+            prevBeepTime = (int)Mathf.Floor(timeLeft % 60);
         }
 
         UpdateTimer();
@@ -104,7 +131,19 @@ public class Timer : MonoBehaviour
         secondsText.text = seconds < 10 ? "0" + Mathf.Floor(seconds).ToString() : Mathf.Floor(seconds).ToString();
         float miliseconds = seconds % 1 * 100;
         milisecondsText.text = miliseconds < 10 ? "0" + Mathf.Floor(miliseconds).ToString() : Mathf.Floor(miliseconds).ToString();
+
     }
+
+    private void PlaySecondsSound()
+    {
+        if (timeLeft < beepSeconds && timeLeft > 0)
+            if (prevBeepTime != (int)Mathf.Floor(timeLeft % 60))
+            {
+                prevBeepTime = (int)Mathf.Floor(timeLeft % 60);
+                audioSource.PlayOneShot(secondsClip);
+            }
+    }
+
 
     private void OnApplicationPause(bool pause)
     {
@@ -132,6 +171,7 @@ public class Timer : MonoBehaviour
         timer = PlayerPrefs.GetInt("Timer", 600);
         pauseButtonText.text = "⏵";
         timeLeft = timer;
+        prevBeepTime = (int)Mathf.Floor(timeLeft);
         UpdateTimer();
     }
 }

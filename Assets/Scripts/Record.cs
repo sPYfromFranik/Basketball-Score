@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class Record : MonoBehaviour
 {
     public event Action<Record> Deleted;
+    public TMP_Text leftFouls;
+    public TMP_Text rightFouls;
     public TMP_Text leftScore;
     public TMP_Text rightScore;
     public Image leftTeamImage;

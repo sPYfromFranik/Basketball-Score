@@ -4,12 +4,19 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.UI;
 
 public class ScoreCounter : MonoBehaviour
 {
     [SerializeField] TMP_Text leftScoreText;
     [SerializeField] TMP_Text rightScoreText;
+    [SerializeField] TMP_Text leftFoulsText;
+    [SerializeField] TMP_Text rightFoulsText;
+    [SerializeField] Button leftFoulMinus;
+    [SerializeField] Button rightFoulMinus;
+    [SerializeField] Button leftFoulPlus;
+    [SerializeField] Button rightFoulPlus;
     [SerializeField] Button leftMinus1;
     [SerializeField] Button leftPlus1;
     [SerializeField] Button leftPlus2;
@@ -24,7 +31,10 @@ public class ScoreCounter : MonoBehaviour
     [SerializeField] TMP_Dropdown leftTeamDropdown;
     [SerializeField] TMP_Dropdown rightTeamDropdown;
     [SerializeField] GameObject menuOverlay;
+    [SerializeField] GameObject endGameOverlay;
     private bool quitBool = false;
+
+    [SerializeField] AudioMixer audioMixer;
 
     public List<TeamPreset> teams = new List<TeamPreset>();
     public class TeamPreset
@@ -39,12 +49,14 @@ public class ScoreCounter : MonoBehaviour
         public enum positions { left, right }
         public positions position;
         public int score = 0;
+        public int fouls = 0;
 
-        public TeamScore(TeamPreset _team, positions _position, int _score)
+        public TeamScore(TeamPreset _team, positions _position, int _score, int _fouls)
         {
             team = _team;
             position = _position;
             score = _score;
+            fouls = _fouls;
         }
 
         public object Clone()
@@ -71,16 +83,21 @@ public class ScoreCounter : MonoBehaviour
         teams[0].icon = noBib;
         teams[1].icon = orangeBib;
         teams[2].icon = greenBib;
+        audioMixer.SetFloat("MasterVolume", PlayerPrefs.GetFloat("Volume", 2));
     }
 
     private void Start()
     {
-        playingTeams.Add(new TeamScore(teams[leftTeamDropdown.value], TeamScore.positions.left, 0));
-        playingTeams.Add(new TeamScore(teams[rightTeamDropdown.value], TeamScore.positions.right, 0));
+        playingTeams.Add(new TeamScore(teams[leftTeamDropdown.value], TeamScore.positions.left, 0, 0));
+        playingTeams.Add(new TeamScore(teams[rightTeamDropdown.value], TeamScore.positions.right, 0, 0));
     }
 
     void OnEnable()
     {
+        leftFoulMinus.onClick.AddListener(() => UpdateFouls(-1, TeamScore.positions.left));
+        leftFoulPlus.onClick.AddListener(() => UpdateFouls(1, TeamScore.positions.left));
+        rightFoulMinus.onClick.AddListener(() => UpdateFouls(-1, TeamScore.positions.right));
+        rightFoulPlus.onClick.AddListener(() => UpdateFouls(1, TeamScore.positions.right));
         leftMinus1.onClick.AddListener(() => UpdateScore(-1, TeamScore.positions.left));
         leftPlus1.onClick.AddListener(() => UpdateScore(1, TeamScore.positions.left));
         leftPlus2.onClick.AddListener(() => UpdateScore(2, TeamScore.positions.left));
@@ -113,12 +130,38 @@ public class ScoreCounter : MonoBehaviour
             else
                 rightScoreText.text = team.score < 10 ? "0" + team.score.ToString() : team.score.ToString();
     }
+
+    public void UpdateFouls(int _value, TeamScore.positions _teamPosition)
+    {
+        foreach (var team in playingTeams)
+            if (team.position == _teamPosition)
+            {
+                team.fouls += _value;
+                team.fouls = team.fouls < 0 ? 0 : team.fouls;
+                break;
+            }
+        UpdateFoulsText();
+    }
+
+    public void UpdateFoulsText()
+    {
+        foreach (var team in playingTeams)
+            if (team.position == TeamScore.positions.left)
+                leftFoulsText.text = team.fouls.ToString();
+            else
+                rightFoulsText.text = team.fouls.ToString();
+    }
+
     public void Reset()
     {
         AddToHistory();
         foreach (var team in playingTeams)
+        {
             team.score = 0;
+            team.fouls = 0;
+        }   
         UpdateScoreText();
+        UpdateFoulsText();
     }
 
     public void ChangePlayingTeam(TeamScore.positions _side, int _team)
@@ -140,12 +183,20 @@ public class ScoreCounter : MonoBehaviour
                 history[_posInHistory].leftTeam = (TeamScore)team.Clone();
             else if (team.position == TeamScore.positions.right)
                 history[_posInHistory].rightTeam = (TeamScore)team.Clone();
+#if !UNITY_EDITOR
+        _ShowAndroidToastMessage("Результати гри збережені");
+#endif
     }
 
     public void OpenMenu()
     {
         menuOverlay.SetActive(true);
         Menu.menuOpened = true;
+    }
+    public void EndGame()
+    {
+        endGameOverlay.SetActive(true);
+        EndGameOverlay.endGameOverlayOpened = true;
     }
     void Update()
     {
@@ -157,6 +208,8 @@ public class ScoreCounter : MonoBehaviour
                 History.CloseHistory();
             else if (QuitOverlay.quitOverlayOpened == true)
                 QuitOverlay.CloseQuitOverlay();
+            else if (EndGameOverlay.endGameOverlayOpened == true)
+                EndGameOverlay.CloseEndGameOverlay();
             else if (!quitBool)
             {
                 quitBool = true;
