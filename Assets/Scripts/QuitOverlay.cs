@@ -1,16 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class QuitOverlay : MonoBehaviour
 {
-
-    public static bool quitOverlayOpened;
-
-    public static void CloseQuitOverlay()
+    private void OnEnable()
     {
-        quitOverlayOpened = false;
-        Vibration.VibratePop();
-        FindObjectOfType<QuitOverlay>().gameObject.SetActive(false);
+        ScreensOrganizer.quitOverlayOpen = true;
+    }
+
+    private void OnDisable()
+    {
+        ScreensOrganizer.quitOverlayOpen = false;
     }
 }

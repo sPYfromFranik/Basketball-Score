@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
@@ -30,9 +28,6 @@ public class ScoreCounter : MonoBehaviour
     [SerializeField] Sprite greenBib;
     [SerializeField] TMP_Dropdown leftTeamDropdown;
     [SerializeField] TMP_Dropdown rightTeamDropdown;
-    [SerializeField] GameObject menuOverlay;
-    [SerializeField] GameObject endGameOverlay;
-    private bool quitBool = false;
 
     [SerializeField] AudioMixer audioMixer;
 
@@ -41,6 +36,13 @@ public class ScoreCounter : MonoBehaviour
     {
         public int ID;
         public Sprite icon;
+        public string name;
+        public TeamPreset(int _ID, Sprite _icon, string _name)
+        {
+            ID = _ID;
+            icon = _icon;
+            name = _name;
+        }
     }
     public List<TeamScore> playingTeams = new List<TeamScore>();
     public class TeamScore : ICloneable
@@ -76,13 +78,9 @@ public class ScoreCounter : MonoBehaviour
     private void Awake()
     {
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
-        for (int i = 0; i < 3; i++)
-            teams.Add(new TeamPreset());
-        for (int i = 0; i < teams.Count; i++)
-            teams[i].ID = i;
-        teams[0].icon = noBib;
-        teams[1].icon = orangeBib;
-        teams[2].icon = greenBib;
+        teams.Add(new TeamPreset(0, noBib, "Без манішок"));
+        teams.Add(new TeamPreset(1, orangeBib, "Оранжеві манішки"));
+        teams.Add(new TeamPreset(2, greenBib, "Зелені манішки"));
         audioMixer.SetFloat("MasterVolume", PlayerPrefs.GetFloat("Volume", 2));
     }
 
@@ -119,7 +117,6 @@ public class ScoreCounter : MonoBehaviour
                 team.score = team.score < 0 ? 0 : team.score;
                 break;
             }
-        Vibration.VibratePop();
         UpdateScoreText();
     }
 
@@ -141,7 +138,6 @@ public class ScoreCounter : MonoBehaviour
                 team.fouls = team.fouls < 0 ? 0 : team.fouls;
                 break;
             }
-        Vibration.VibratePop();
         UpdateFoulsText();
     }
 
@@ -190,53 +186,6 @@ public class ScoreCounter : MonoBehaviour
 #endif
     }
 
-    public void OpenMenu()
-    {
-        menuOverlay.SetActive(true);
-        Menu.menuOpened = true;
-        Vibration.VibratePop();
-    }
-    public void EndGame()
-    {
-        endGameOverlay.SetActive(true);
-        EndGameOverlay.endGameOverlayOpened = true;
-        Vibration.VibratePop();
-    }
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (Menu.menuOpened == true)
-                Menu.CloseMenu();
-            else if (History.historyOpened == true)
-                History.CloseHistory();
-            else if (QuitOverlay.quitOverlayOpened == true)
-                QuitOverlay.CloseQuitOverlay();
-            else if (EndGameOverlay.endGameOverlayOpened == true)
-                EndGameOverlay.CloseEndGameOverlay();
-            else if (RecordEditOverlay.recordEditOverlayOpened == true)
-                FindObjectOfType<RecordEditOverlay>().CloseRecordEditOverlay();
-            else if (!quitBool)
-            {
-                quitBool = true;
-#if UNITY_EDITOR
-                Debug.Log("Тапніть ще раз щоб закрити застосунок");
-#else
-                _ShowAndroidToastMessage("Тапніть ще раз щоб закрити застосунок");
-#endif
-                StartCoroutine(CloseButtonDelay());
-            }
-            else
-            {
-                quitBool = false;
-                Menu.CloseGame();
-            }
-            Vibration.VibratePop();
-        }
-        else if (Input.touchCount >= 1 && quitBool)
-            quitBool = false;
-    }
-
     /// <param name="message">Message string to show in the toast.</param>
     private void _ShowAndroidToastMessage(string message)
     {
@@ -252,17 +201,5 @@ public class ScoreCounter : MonoBehaviour
                 toastObject.Call("show");
             }));
         }
-    }
-
-    private IEnumerator CloseButtonDelay()
-    {
-        yield return new WaitForSeconds(2.5f);
-        if (quitBool)
-            quitBool=false;
-    }
-
-    public void VibrationPop()
-    {
-        Vibration.VibratePop();
     }
 }

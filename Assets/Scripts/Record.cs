@@ -34,6 +34,7 @@ public class Record : MonoBehaviour
 
     public void EditRecord()
     {
+        Vibration.VibratePop();
         Editing?.Invoke(this);
     }
 }

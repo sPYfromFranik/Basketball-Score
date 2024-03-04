@@ -9,13 +9,12 @@ public class History : MonoBehaviour
     private List<Record> recordsList = new List<Record>();
     [SerializeField] GameObject recordsHolder;
     [SerializeField] Button clearListButton;
-    [SerializeField] GameObject recordEditOverlay;
-    public static bool historyOpened;
+    [SerializeField] RecordEditOverlay recordEditOverlay;
     private void OnEnable()
     {
+        ScreensOrganizer.historyOverlayOpen = true;
         FormList();
     }
-
 
     void UpdateList(Record _record)
     {
@@ -97,20 +96,17 @@ public class History : MonoBehaviour
         clearListButton.interactable = false;
     }
 
-    public static void CloseHistory()
+    public void OnDisable()
     {
-        historyOpened = false;
-        Vibration.VibratePop();
-        FindObjectOfType<History>().ClearList();
-        FindObjectOfType<History>().gameObject.SetActive(false);
+        ScreensOrganizer.historyOverlayOpen = false;
+        ClearList();
     }
 
     private void UpdateRecord(Record _record)
     {
-        RecordEditOverlay.recordEditOverlayOpened = true;
-        recordEditOverlay.SetActive(true);
-        FindObjectOfType<RecordEditOverlay>().editingRecord = _record;
-        FindObjectOfType<RecordEditOverlay>().UpdateVisuals();
-        CloseHistory();
+        ScreensOrganizer.screensOrganizer.recordEditOverlay.SetActive(true);
+        recordEditOverlay.editingRecord = _record;
+        recordEditOverlay.UpdateVisuals();
+        gameObject.SetActive(false);
     }
 }

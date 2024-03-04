@@ -1,20 +1,16 @@
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 
 public class Menu : MonoBehaviour
 {
-    [SerializeField] GameObject historyOverlay;
-    [SerializeField] GameObject quitOverlay;
     [SerializeField] TMP_InputField beepSecondsInput;
     [SerializeField] Slider volumeSlider;
     [SerializeField] AudioMixer audioMixer;
     [SerializeField] Toggle midGameSoundBool;
     [SerializeField] Toggle vibroFeedback;
     [SerializeField] Toggle soundVibration;
-    public static bool menuOpened;
     private bool firstLoadHappened = false;
 
     void Awake()
@@ -26,49 +22,19 @@ public class Menu : MonoBehaviour
         soundVibration.isOn = PlayerPrefs.GetInt("SoundVibration", 1) == 1 ? true : false;
         firstLoadHappened = true;
     }
-
-    public void OpenHistory()
+    private void OnEnable()
     {
-        historyOverlay.SetActive(true);
-        History.historyOpened = true;
-        Vibration.VibratePop();
-        CloseMenu();
+        ScreensOrganizer.menuOverlayOpen = true;
     }
-
-    public static void CloseMenu()
+    private void OnDisable()
     {
-        menuOpened = false;
-        Vibration.VibratePop();
-        FindObjectOfType<Menu>().gameObject.SetActive(false);
+        ScreensOrganizer.menuOverlayOpen = false;
     }
 
     public void Donate()
     {
         Vibration.VibratePop();
         Application.OpenURL("https://send.monobank.ua/jar/3Q4pR2QGyK");
-    }
-
-    public static void CloseGame()
-    {
-        Vibration.VibratePop();
-#if UNITY_EDITOR
-        EditorApplication.ExitPlaymode();
-#else
-        Menu.MoveAndroidApplicationToBack();
-#endif
-        if (QuitOverlay.quitOverlayOpened)
-        {
-            QuitOverlay.quitOverlayOpened = false;
-            QuitOverlay.CloseQuitOverlay();
-        }
-    }
-
-    public void OpenQuitOverlay()
-    {
-        Vibration.VibratePop();
-        QuitOverlay.quitOverlayOpened = true;
-        quitOverlay.SetActive(true);
-        CloseMenu();
     }
 
     public static void MoveAndroidApplicationToBack()

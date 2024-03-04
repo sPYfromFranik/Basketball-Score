@@ -1,12 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public class RecordEditOverlay : MonoBehaviour
 {
-
-    [HideInInspector] public static bool recordEditOverlayOpened;
     [HideInInspector] public Record editingRecord;
     [SerializeField] TMP_Dropdown leftTeamDropdown;
     [SerializeField] TMP_Dropdown rightTeamDropdown;
@@ -14,15 +10,15 @@ public class RecordEditOverlay : MonoBehaviour
     [SerializeField] TMP_InputField rightTeamScore;
     [SerializeField] TMP_InputField leftTeamFouls;
     [SerializeField] TMP_InputField rightTeamFouls;
-    [SerializeField] GameObject historyOverlay;
 
-    public void CloseRecordEditOverlay()
+    private void OnEnable()
     {
-        recordEditOverlayOpened = false;
-        Vibration.VibratePop();
-        gameObject.SetActive(false);
-        historyOverlay.SetActive(true);
-        History.historyOpened = true;
+        ScreensOrganizer.recordEditOverlayOpen = true;
+    }
+
+    private void OnDisable()
+    {
+        ScreensOrganizer.recordEditOverlayOpen = false;
     }
 
     public void UpdateVisuals()
@@ -43,6 +39,7 @@ public class RecordEditOverlay : MonoBehaviour
         editingRecord.scoreHistoryRecord.rightTeam.score = int.Parse(rightTeamScore.text);
         editingRecord.scoreHistoryRecord.leftTeam.fouls = int.Parse(leftTeamFouls.text);
         editingRecord.scoreHistoryRecord.rightTeam.fouls = int.Parse(rightTeamFouls.text);
-        CloseRecordEditOverlay();
+        gameObject.SetActive(false);
+        ScreensOrganizer.screensOrganizer.historyOverlay.SetActive(true);
     }
 }
