@@ -161,7 +161,7 @@ public class StatisticsOverlay : MonoBehaviour
         else if (_historyTeam.score < _historyEnemy.score)
             _statisticsTeam.gamesLost++;
         _statisticsTeam.scoreTeamTotal += _historyTeam.score;
-        _statisticsTeam.scoreEnemyTotal += _historyTeam.score;
+        _statisticsTeam.scoreEnemyTotal += _historyEnemy.score;
         _statisticsTeam.foulsTotal += _historyTeam.fouls;
     }
 }
