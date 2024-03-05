@@ -15,6 +15,12 @@ The app is ad free.<br>
 <li><a href="https://www.flaticon.com/free-icon/singlet_4182529">Shirt icon</a></li>
 <li><a href="https://www.flaticon.com/free-icon/delete_3405244">Trash icon</a></li>
 <li><a href="https://www.flaticon.com/free-icon/pencil_6177842">Pencil icon</a></li>
+<li><a href="https://www.flaticon.com/free-icon/medal_2583344">Medal 1 icon</a></li>
+<li><a href="https://www.flaticon.com/free-icon/medal_2583319">Medal 2 icon</a></li>
+<li><a href="https://www.flaticon.com/free-icon/medal_2583434">Medal 3 icon</a></li>
+<li><a href="https://www.flaticon.com/free-icon/menu_4204600">Menu icon</a></li>
+<li><a href="https://www.flaticon.com/free-icon/history_3503786">History icon</a></li>
+<li><a href="https://www.flaticon.com/free-icon/podium_3112825">Podium icon</a></li>
 <br>
 <b>Other</b>
 <li><a href="https://github.com/BenoitFreslon/Vibration">Custom vibrations plugin for Unity</a></li>
