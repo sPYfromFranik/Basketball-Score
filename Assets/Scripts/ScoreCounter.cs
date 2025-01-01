@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using System.IO;
 
 public class ScoreCounter : MonoBehaviour
 {
@@ -30,8 +31,11 @@ public class ScoreCounter : MonoBehaviour
     [SerializeField] TMP_Dropdown rightTeamDropdown;
 
     [SerializeField] AudioMixer audioMixer;
+    public static ScoreHistoryWrapper historyWrapper;
+    public static string saveFilePath;
 
     public List<TeamPreset> teams = new List<TeamPreset>();
+    [Serializable]
     public class TeamPreset
     {
         public int ID;
@@ -45,6 +49,7 @@ public class ScoreCounter : MonoBehaviour
         }
     }
     public List<TeamScore> playingTeams = new List<TeamScore>();
+    [Serializable]
     public class TeamScore : ICloneable
     {
         public TeamPreset team;
@@ -66,8 +71,13 @@ public class ScoreCounter : MonoBehaviour
             return this.MemberwiseClone();
         }
     }
+    [Serializable]
+    public class ScoreHistoryWrapper
+    {
+        public List<ScoreHistoryRecord> history = new List<ScoreHistoryRecord>();
+    }
 
-    public static List<ScoreHistoryRecord> history = new List<ScoreHistoryRecord>();
+    [Serializable]
     public class ScoreHistoryRecord
     {
         public int gameNumber;
@@ -86,6 +96,12 @@ public class ScoreCounter : MonoBehaviour
 
     private void Start()
     {
+        saveFilePath = Application.persistentDataPath + "/savefile.json";
+        historyWrapper = new ScoreHistoryWrapper();
+        if (File.Exists(saveFilePath))
+        {
+            historyWrapper = JsonUtility.FromJson<ScoreHistoryWrapper>(File.ReadAllText(saveFilePath));
+        }
         playingTeams.Add(new TeamScore(teams[leftTeamDropdown.value], TeamScore.positions.left, 0, 0));
         playingTeams.Add(new TeamScore(teams[rightTeamDropdown.value], TeamScore.positions.right, 0, 0));
     }
@@ -173,17 +189,23 @@ public class ScoreCounter : MonoBehaviour
 
     public void AddToHistory()
     {
-        history.Add(new ScoreHistoryRecord());
-        int _posInHistory = history.Count - 1;
-        history[_posInHistory].gameNumber = _posInHistory;
+        historyWrapper.history.Add(new ScoreHistoryRecord());
+        int _posInHistory = historyWrapper.history.Count - 1;
+        historyWrapper.history[_posInHistory].gameNumber = _posInHistory;
         foreach (var team in playingTeams)
             if (team.position == TeamScore.positions.left)
-                history[_posInHistory].leftTeam = (TeamScore)team.Clone();
+                historyWrapper.history[_posInHistory].leftTeam = (TeamScore)team.Clone();
             else if (team.position == TeamScore.positions.right)
-                history[_posInHistory].rightTeam = (TeamScore)team.Clone();
+                historyWrapper.history[_posInHistory].rightTeam = (TeamScore)team.Clone();
+        UpdateSaveFile();
 #if !UNITY_EDITOR
         _ShowAndroidToastMessage("Результати гри збережені");
 #endif
+    }
+
+    public static void UpdateSaveFile()
+    {
+        File.WriteAllText(saveFilePath, JsonUtility.ToJson(historyWrapper));
     }
 
     /// <param name="message">Message string to show in the toast.</param>

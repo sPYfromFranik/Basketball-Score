@@ -62,7 +62,7 @@ public class StatisticsOverlay : MonoBehaviour
     {
         //form a list of teams that played
         List<ScoreCounter.TeamPreset> playingTeams = new List<ScoreCounter.TeamPreset>();
-        foreach (ScoreCounter.ScoreHistoryRecord scoreHistoryRecord in ScoreCounter.history)
+        foreach (ScoreCounter.ScoreHistoryRecord scoreHistoryRecord in ScoreCounter.historyWrapper.history)
         {
             var leftTeamFound = false;
             var rightTeamFound = false;
@@ -86,7 +86,7 @@ public class StatisticsOverlay : MonoBehaviour
             statisticsRecords.Add(new StatisticsRecord(playingTeam));
 
         //fill statistics with data
-        foreach (ScoreCounter.ScoreHistoryRecord scoreHistoryRecord in ScoreCounter.history)
+        foreach (ScoreCounter.ScoreHistoryRecord scoreHistoryRecord in ScoreCounter.historyWrapper.history)
             foreach (var statisticsTeam in statisticsRecords)
             {
                 if (statisticsTeam.team == scoreHistoryRecord.leftTeam.team)
