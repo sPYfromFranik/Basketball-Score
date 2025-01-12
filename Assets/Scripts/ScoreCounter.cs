@@ -98,12 +98,23 @@ public class ScoreCounter : MonoBehaviour
     {
         saveFilePath = Application.persistentDataPath + "/savefile.json";
         historyWrapper = new ScoreHistoryWrapper();
+        playingTeams.Add(new TeamScore(teams[leftTeamDropdown.value], TeamScore.positions.left, 0, 0));
+        playingTeams.Add(new TeamScore(teams[rightTeamDropdown.value], TeamScore.positions.right, 0, 0));
         if (File.Exists(saveFilePath))
         {
             historyWrapper = JsonUtility.FromJson<ScoreHistoryWrapper>(File.ReadAllText(saveFilePath));
+            //reassigning teams from the save file to the locally initiated teams
+            foreach(ScoreHistoryRecord record in historyWrapper.history)
+            {
+                foreach (TeamPreset team in teams)
+                {
+                    if(record.leftTeam.team.name == team.name)
+                        record.leftTeam.team = team;
+                    if(record.rightTeam.team.name == team.name)
+                        record.rightTeam.team = team;
+                }
+            }
         }
-        playingTeams.Add(new TeamScore(teams[leftTeamDropdown.value], TeamScore.positions.left, 0, 0));
-        playingTeams.Add(new TeamScore(teams[rightTeamDropdown.value], TeamScore.positions.right, 0, 0));
     }
 
     void OnEnable()
